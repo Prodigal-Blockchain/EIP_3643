@@ -34,14 +34,20 @@ The T-REX protocol consists of several key components:
 ## Deployment
 
 1. Replace .env.example with .env and replace
+
+```
    -RPC_URL=<Alchemy/Infura rpc>
-   -PRIVATE_KEY=<Wallet address private Key>
-   -BASESCAN_API=<Etherscan or other api key>
+```
+
+-PRIVATE_KEY=<Wallet address private Key>
+
+````
+-BASESCAN_API=<Etherscan or other api key>
 
 2. To deply and mint security token run
 
 ```sh
 npx hardhat run scripts/deploy.js --netowrk NETWORK
-```
+````
 
 Replace NETWORK valide network of your choice (ex: sepolia or base-sepolia)
