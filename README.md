@@ -26,7 +26,7 @@ The T-REX protocol consists of several key components:
 
 ## Getting Started
 
-1. Clone the repository: `git clone https://github.com/TokenySolutions/T-REX-Clone.git`
+1. Clone the repository: `git clone https://github.com/Pratima-M1/T-REX-Clone.git`
 2. Install dependencies: `npm ci`
 3. Compile the contracts: `hardhat compile`
 4. Run tests: `hardhat test`
