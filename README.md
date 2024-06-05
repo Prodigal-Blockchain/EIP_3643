@@ -35,9 +35,9 @@ The T-REX protocol consists of several key components:
 
 1. Replace .env.example with .env and replace
 
-   - RPC_URL=<Alchemy/Infura rpc>
-   - PRIVATE_KEY=<Wallet address private Key>
-   - BASESCAN_API=<Etherscan or other api key>
+   - RPC_URL=
+   - PRIVATE_KEY=
+   - BASESCAN_API=
 
 2. To deply and mint security token run
 
