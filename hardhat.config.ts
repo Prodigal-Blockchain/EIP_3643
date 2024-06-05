@@ -20,7 +20,7 @@ const config: HardhatUserConfig = {
     },
   },
   networks: {
-    sepolia: {
+    baseSepolia: {
       url: process.env.RPC_URL,
       accounts: [process.env.PRIVATE_KEY as string],
       gasPrice: 10000000000,
