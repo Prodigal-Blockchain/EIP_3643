@@ -61,26 +61,24 @@
  */
 pragma solidity 0.8.17;
 
-import "../roles/AgentRole.sol";
-import "../token/IToken.sol";
-import "../registry/interface/IClaimTopicsRegistry.sol";
-import "../registry/interface/IIdentityRegistry.sol";
-import "../compliance/modular/IModularCompliance.sol";
-import "../registry/interface/ITrustedIssuersRegistry.sol";
-import "../registry/interface/IIdentityRegistryStorage.sol";
-import "../proxy/authority/ITREXImplementationAuthority.sol";
-import "../proxy/TokenProxy.sol";
-import "../proxy/ClaimTopicsRegistryProxy.sol";
-import "../proxy/IdentityRegistryProxy.sol";
-import "../proxy/IdentityRegistryStorageProxy.sol";
-import "../proxy/TrustedIssuersRegistryProxy.sol";
-import "../proxy/ModularComplianceProxy.sol";
-import "./ITREXFactory.sol";
-import "@onchain-id/solidity/contracts/factory/IIdFactory.sol";
-
+import '../roles/AgentRole.sol';
+import '../token/IToken.sol';
+import '../registry/interface/IClaimTopicsRegistry.sol';
+import '../registry/interface/IIdentityRegistry.sol';
+import '../compliance/modular/IModularCompliance.sol';
+import '../registry/interface/ITrustedIssuersRegistry.sol';
+import '../registry/interface/IIdentityRegistryStorage.sol';
+import '../proxy/authority/ITREXImplementationAuthority.sol';
+import '../proxy/TokenProxy.sol';
+import '../proxy/ClaimTopicsRegistryProxy.sol';
+import '../proxy/IdentityRegistryProxy.sol';
+import '../proxy/IdentityRegistryStorageProxy.sol';
+import '../proxy/TrustedIssuersRegistryProxy.sol';
+import '../proxy/ModularComplianceProxy.sol';
+import './ITREXFactory.sol';
+import '@onchain-id/solidity/contracts/factory/IIdFactory.sol';
 
 contract TREXFactory is ITREXFactory, Ownable {
-
     /// the address of the implementation authority contract used in the tokens deployed by the factory
     address private _implementationAuthority;
 
@@ -100,23 +98,18 @@ contract TREXFactory is ITREXFactory, Ownable {
      *  @dev See {ITREXFactory-deployTREXSuite}.
      */
     // solhint-disable-next-line code-complexity, function-max-lines
-    function deployTREXSuite(string memory _salt, TokenDetails calldata _tokenDetails, ClaimDetails calldata
-        _claimDetails)
-    external override onlyOwner {
-        require(tokenDeployed[_salt] == address(0)
-        , "token already deployed");
-        require((_claimDetails.issuers).length == (_claimDetails.issuerClaims).length
-        , "claim pattern not valid");
-        require((_claimDetails.issuers).length <= 5
-        , "max 5 claim issuers at deployment");
-        require((_claimDetails.claimTopics).length <= 5
-        , "max 5 claim topics at deployment");
-        require((_tokenDetails.irAgents).length <= 5 && (_tokenDetails.tokenAgents).length <= 5
-        , "max 5 agents at deployment");
-        require((_tokenDetails.complianceModules).length <= 30
-        , "max 30 module actions at deployment");
-        require((_tokenDetails.complianceModules).length >= (_tokenDetails.complianceSettings).length
-        , "invalid compliance pattern");
+    function deployTREXSuite(
+        string memory _salt,
+        TokenDetails calldata _tokenDetails,
+        ClaimDetails calldata _claimDetails
+    ) external override onlyOwner {
+        require(tokenDeployed[_salt] == address(0), 'token already deployed');
+        require((_claimDetails.issuers).length == (_claimDetails.issuerClaims).length, 'claim pattern not valid');
+        require((_claimDetails.issuers).length <= 5, 'max 5 claim issuers at deployment');
+        require((_claimDetails.claimTopics).length <= 5, 'max 5 claim topics at deployment');
+        require((_tokenDetails.irAgents).length <= 5 && (_tokenDetails.tokenAgents).length <= 5, 'max 5 agents at deployment');
+        require((_tokenDetails.complianceModules).length <= 30, 'max 30 module actions at deployment');
+        require((_tokenDetails.complianceModules).length >= (_tokenDetails.complianceSettings).length, 'invalid compliance pattern');
 
         ITrustedIssuersRegistry tir = ITrustedIssuersRegistry(_deployTIR(_salt, _implementationAuthority));
         IClaimTopicsRegistry ctr = IClaimTopicsRegistry(_deployCTR(_salt, _implementationAuthority));
@@ -124,14 +117,12 @@ contract TREXFactory is ITREXFactory, Ownable {
         IIdentityRegistryStorage irs;
         if (_tokenDetails.irs == address(0)) {
             irs = IIdentityRegistryStorage(_deployIRS(_salt, _implementationAuthority));
-        }
-        else {
+        } else {
             irs = IIdentityRegistryStorage(_tokenDetails.irs);
         }
-        IIdentityRegistry ir = IIdentityRegistry(_deployIR(_salt, _implementationAuthority, address(tir),
-            address(ctr), address(irs)));
-        IToken token = IToken(_deployToken
-            (
+        IIdentityRegistry ir = IIdentityRegistry(_deployIR(_salt, _implementationAuthority, address(tir), address(ctr), address(irs)));
+        IToken token = IToken(
+            _deployToken(
                 _salt,
                 _implementationAuthority,
                 address(ir),
@@ -140,8 +131,9 @@ contract TREXFactory is ITREXFactory, Ownable {
                 _tokenDetails.symbol,
                 _tokenDetails.decimals,
                 _tokenDetails.ONCHAINID
-            ));
-        if(_tokenDetails.ONCHAINID == address(0)) {
+            )
+        );
+        if (_tokenDetails.ONCHAINID == address(0)) {
             address _tokenID = IIdFactory(_idFactory).createTokenIdentity(address(token), _tokenDetails.owner, _salt);
             token.setOnchainID(_tokenID);
         }
@@ -186,21 +178,21 @@ contract TREXFactory is ITREXFactory, Ownable {
     /**
      *  @dev See {ITREXFactory-getImplementationAuthority}.
      */
-    function getImplementationAuthority() external override view returns(address) {
+    function getImplementationAuthority() external view override returns (address) {
         return _implementationAuthority;
     }
 
     /**
      *  @dev See {ITREXFactory-getIdFactory}.
      */
-    function getIdFactory() external override view returns(address) {
+    function getIdFactory() external view override returns (address) {
         return _idFactory;
     }
 
     /**
      *  @dev See {ITREXFactory-getToken}.
      */
-    function getToken(string calldata _salt) external override view returns(address) {
+    function getToken(string calldata _salt) external view override returns (address) {
         return tokenDeployed[_salt];
     }
 
@@ -208,16 +200,17 @@ contract TREXFactory is ITREXFactory, Ownable {
      *  @dev See {ITREXFactory-setImplementationAuthority}.
      */
     function setImplementationAuthority(address implementationAuthority_) public override onlyOwner {
-        require(implementationAuthority_ != address(0), "invalid argument - zero address");
+        require(implementationAuthority_ != address(0), 'invalid argument - zero address');
         // should not be possible to set an implementation authority that is not complete
         require(
-            (ITREXImplementationAuthority(implementationAuthority_)).getTokenImplementation() != address(0)
-            && (ITREXImplementationAuthority(implementationAuthority_)).getCTRImplementation() != address(0)
-            && (ITREXImplementationAuthority(implementationAuthority_)).getIRImplementation() != address(0)
-            && (ITREXImplementationAuthority(implementationAuthority_)).getIRSImplementation() != address(0)
-            && (ITREXImplementationAuthority(implementationAuthority_)).getMCImplementation() != address(0)
-            && (ITREXImplementationAuthority(implementationAuthority_)).getTIRImplementation() != address(0),
-            "invalid Implementation Authority");
+            (ITREXImplementationAuthority(implementationAuthority_)).getTokenImplementation() != address(0) &&
+                (ITREXImplementationAuthority(implementationAuthority_)).getCTRImplementation() != address(0) &&
+                (ITREXImplementationAuthority(implementationAuthority_)).getIRImplementation() != address(0) &&
+                (ITREXImplementationAuthority(implementationAuthority_)).getIRSImplementation() != address(0) &&
+                (ITREXImplementationAuthority(implementationAuthority_)).getMCImplementation() != address(0) &&
+                (ITREXImplementationAuthority(implementationAuthority_)).getTIRImplementation() != address(0),
+            'invalid Implementation Authority'
+        );
         _implementationAuthority = implementationAuthority_;
         emit ImplementationAuthoritySet(implementationAuthority_);
     }
@@ -226,7 +219,7 @@ contract TREXFactory is ITREXFactory, Ownable {
      *  @dev See {ITREXFactory-setIdFactory}.
      */
     function setIdFactory(address idFactory_) public override onlyOwner {
-        require(idFactory_ != address(0), "invalid argument - zero address");
+        require(idFactory_ != address(0), 'invalid argument - zero address');
         _idFactory = idFactory_;
         emit IdFactorySet(idFactory_);
     }
@@ -239,7 +232,7 @@ contract TREXFactory is ITREXFactory, Ownable {
         // solhint-disable-next-line no-inline-assembly
         assembly {
             let encoded_data := add(0x20, bytecode) // load initialization code.
-            let encoded_size := mload(bytecode)     // load init code's length.
+            let encoded_size := mload(bytecode) // load init code's length.
             addr := create2(0, encoded_data, encoded_size, saltBytes)
             if iszero(extcodesize(addr)) {
                 revert(0, 0)
@@ -250,11 +243,7 @@ contract TREXFactory is ITREXFactory, Ownable {
     }
 
     /// function used to deploy a trusted issuers registry using CREATE2
-    function _deployTIR
-    (
-        string memory _salt,
-        address implementationAuthority_
-    ) private returns (address){
+    function _deployTIR(string memory _salt, address implementationAuthority_) private returns (address) {
         bytes memory _code = type(TrustedIssuersRegistryProxy).creationCode;
         bytes memory _constructData = abi.encode(implementationAuthority_);
         bytes memory bytecode = abi.encodePacked(_code, _constructData);
@@ -262,11 +251,7 @@ contract TREXFactory is ITREXFactory, Ownable {
     }
 
     /// function used to deploy a claim topics registry using CREATE2
-    function  _deployCTR
-    (
-        string memory _salt,
-        address implementationAuthority_
-    ) private returns (address) {
+    function _deployCTR(string memory _salt, address implementationAuthority_) private returns (address) {
         bytes memory _code = type(ClaimTopicsRegistryProxy).creationCode;
         bytes memory _constructData = abi.encode(implementationAuthority_);
         bytes memory bytecode = abi.encodePacked(_code, _constructData);
@@ -274,11 +259,7 @@ contract TREXFactory is ITREXFactory, Ownable {
     }
 
     /// function used to deploy modular compliance contract using CREATE2
-    function  _deployMC
-    (
-        string memory _salt,
-        address implementationAuthority_
-    ) private returns (address) {
+    function _deployMC(string memory _salt, address implementationAuthority_) private returns (address) {
         bytes memory _code = type(ModularComplianceProxy).creationCode;
         bytes memory _constructData = abi.encode(implementationAuthority_);
         bytes memory bytecode = abi.encodePacked(_code, _constructData);
@@ -286,11 +267,7 @@ contract TREXFactory is ITREXFactory, Ownable {
     }
 
     /// function used to deploy an identity registry storage using CREATE2
-    function _deployIRS
-    (
-        string memory _salt,
-        address implementationAuthority_
-    ) private returns (address) {
+    function _deployIRS(string memory _salt, address implementationAuthority_) private returns (address) {
         bytes memory _code = type(IdentityRegistryStorageProxy).creationCode;
         bytes memory _constructData = abi.encode(implementationAuthority_);
         bytes memory bytecode = abi.encodePacked(_code, _constructData);
@@ -298,8 +275,7 @@ contract TREXFactory is ITREXFactory, Ownable {
     }
 
     /// function used to deploy an identity registry using CREATE2
-    function _deployIR
-    (
+    function _deployIR(
         string memory _salt,
         address implementationAuthority_,
         address _trustedIssuersRegistry,
@@ -307,20 +283,13 @@ contract TREXFactory is ITREXFactory, Ownable {
         address _identityStorage
     ) private returns (address) {
         bytes memory _code = type(IdentityRegistryProxy).creationCode;
-        bytes memory _constructData = abi.encode
-        (
-            implementationAuthority_,
-            _trustedIssuersRegistry,
-            _claimTopicsRegistry,
-            _identityStorage
-        );
+        bytes memory _constructData = abi.encode(implementationAuthority_, _trustedIssuersRegistry, _claimTopicsRegistry, _identityStorage);
         bytes memory bytecode = abi.encodePacked(_code, _constructData);
         return _deploy(_salt, bytecode);
     }
 
     /// function used to deploy a token using CREATE2
-    function _deployToken
-    (
+    function _deployToken(
         string memory _salt,
         address implementationAuthority_,
         address _identityRegistry,
@@ -331,16 +300,7 @@ contract TREXFactory is ITREXFactory, Ownable {
         address _onchainId
     ) private returns (address) {
         bytes memory _code = type(TokenProxy).creationCode;
-        bytes memory _constructData = abi.encode
-        (
-            implementationAuthority_,
-            _identityRegistry,
-            _compliance,
-            _name,
-            _symbol,
-            _decimals,
-            _onchainId
-        );
+        bytes memory _constructData = abi.encode(implementationAuthority_, _identityRegistry, _compliance, _name, _symbol, _decimals, _onchainId);
         bytes memory bytecode = abi.encodePacked(_code, _constructData);
         return _deploy(_salt, bytecode);
     }

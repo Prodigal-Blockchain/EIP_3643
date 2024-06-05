@@ -1,10 +1,13 @@
-import '@xyrusworx/hardhat-solidity-json';
-import '@nomicfoundation/hardhat-toolbox';
+/* import '@xyrusworx/hardhat-solidity-json';
+//import '@nomicfoundation/hardhat-toolbox';*/
 import { HardhatUserConfig } from 'hardhat/config';
-import '@openzeppelin/hardhat-upgrades';
+/*import '@openzeppelin/hardhat-upgrades';
 import 'solidity-coverage';
 import '@nomiclabs/hardhat-solhint';
-import '@primitivefi/hardhat-dodoc';
+import '@primitivefi/hardhat-dodoc';*/
+import dotenv from 'dotenv';
+import '@nomicfoundation/hardhat-verify';
+dotenv.config();
 
 const config: HardhatUserConfig = {
   solidity: {
@@ -16,14 +19,16 @@ const config: HardhatUserConfig = {
       },
     },
   },
-  gasReporter: {
-    enabled: true,
+  networks: {
+    sepolia: {
+      url: process.env.RPC_URL,
+      accounts: [process.env.PRIVATE_KEY as string],
+      gasPrice: 10000000000,
+    },
   },
-  dodoc: {
-    runOnCompile: false,
-    debugMode: true,
-    outputDir: "./docgen",
-    freshOutput: true,
+
+  etherscan: {
+    apiKey: process.env.BASESCAN_API,
   },
 };
 
