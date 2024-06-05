@@ -41,7 +41,7 @@ async function deployFullSuite() {
 
   const identityImplementation = await IdentityFactory.deploy(deployer.address, true);
   await identityImplementation.deployed();
-  console.log('On chainId IdentityFactory: ', identityImplementation.address);
+  console.log('IdentityFactory: ', identityImplementation.address);
   const ImplementationAuthorityFactory = await ethers.getContractFactory(
     OnchainID.contracts.ImplementationAuthority.abi,
     OnchainID.contracts.ImplementationAuthority.bytecode,
