@@ -26,10 +26,11 @@ The T-REX protocol consists of several key components:
 
 ## Getting Started
 
-1. Clone the repository: `git clone https://github.com/Pratima-M1/T-REX-Clone.git`
-2. Install dependencies: `npm ci`
-3. Compile the contracts: `npx hardhat compile`
-4. Run tests: `npx hardhat test`
+1. Clone the repository: `git clone https://github.com/Prodigal-Blockchain/EIP_3643.git`
+2. cd EIP_3643
+3. Install dependencies: `npm ci`
+4. Compile the contracts: `npx hardhat compile`
+5. Run tests: `npx hardhat test`
 
 ## Deployment
 
