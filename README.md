@@ -1,4 +1,4 @@
-# T-REX Clone
+# T-REX ERC-3643
 
 ## Overview
 
